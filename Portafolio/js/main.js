@@ -120,15 +120,41 @@ document.addEventListener('keydown', e => {
     }
 });
 
-// Dummy contact form handler
+// ... (tu código existente) ...
+
+// Contact form handler con EmailJS
 const contactForm = document.getElementById('contact-form');
-if (contactForm) {
-    contactForm.addEventListener('submit', e => {
-        e.preventDefault();
-        alert('Gracias por tu mensaje. Me pondré en contacto contigo pronto.');
-        contactForm.reset();
+const submitContactBtn = document.getElementById('submit-contact-btn');
+
+if (contactForm && submitContactBtn) {
+    contactForm.addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevenir el envío tradicional del formulario
+
+        // Cambiar el texto del botón y deshabilitarlo para feedback visual
+        const originalButtonText = submitContactBtn.textContent;
+        submitContactBtn.disabled = true;
+        submitContactBtn.textContent = 'Enviando...';
+
+        // Reemplaza con tus IDs de EmailJS
+        const serviceID = 'service_addmbm2'; // Este es tu Service ID
+        const templateID = 'template_lgy393k'; // <--- ¡AQUÍ VA!
+
+        // Enviar el formulario usando EmailJS
+        emailjs.sendForm(serviceID, templateID, this) // 'this' se refiere al elemento form
+            .then(() => {
+                alert('¡Gracias por tu mensaje! Me pondré en contacto contigo pronto.');
+                contactForm.reset(); // Limpiar el formulario
+                submitContactBtn.disabled = false;
+                submitContactBtn.textContent = originalButtonText;
+            }, (err) => {
+                alert('Hubo un error al enviar el mensaje. Por favor, inténtalo de nuevo.\nError: ' + JSON.stringify(err));
+                submitContactBtn.disabled = false;
+                submitContactBtn.textContent = originalButtonText;
+            });
     });
 }
+
+// ... (el resto de tu código JavaScript) ...
 
 // --- COMIENZO: Lógica para Menú Hamburguesa ---
 const menuToggleBtn = document.getElementById('menu-toggle');

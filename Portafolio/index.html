@@ -251,11 +251,12 @@
 
 <section class="section" id="contact" tabindex="-1" aria-label="Contacto">
   <h2 class="section-title">Contacto</h2>
-  <form id="contact-form" action="#" method="POST">
+  <!-- No action ni method, EmailJS lo maneja -->
+  <form id="contact-form">
     <input type="text" name="name" placeholder="Tu nombre" required />
     <input type="email" name="email" placeholder="Tu correo electrónico" required />
     <textarea name="message" placeholder="Tu mensaje" required></textarea>
-    <button type="submit">Enviar</button>
+    <button type="submit" id="submit-contact-btn">Enviar</button>
   </form>
 </section>
 
@@ -304,6 +305,20 @@
     </p>
   </div>
 </footer>
+<!-- EmailJS SDK y su inicialización -->
+<script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+</script>
+<script type="text/javascript">
+  (function(){
+     // Asegúrate de que "NONsm5nSaZCQSS_Eq" sea tu Public Key (User ID) correcta de EmailJS
+     emailjs.init({
+       publicKey: "NONsm5nSaZCQSS_Eq",
+     });
+  })();
+</script>
+
+<!-- Tu script principal -->
 <script src="js/main.js"></script>
 
 </body>
