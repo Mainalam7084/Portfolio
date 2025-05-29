@@ -1,0 +1,56 @@
+# Ignorar dependencias de Node.js (si las usaras en el futuro)
+# Es muy común para herramientas de desarrollo, linters, etc.
+node_modules/
+
+# Ignorar archivos de log generados por npm o yarn
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ignorar archivos de configuración específicos de IDEs y editores
+# Esto evita que las configuraciones personales de cada desarrollador se suban
+.vscode/
+.idea/
+*.project
+*.sublime-project
+*.sublime-workspace
+*.komodoproject
+
+# Ignorar archivos generados por el sistema operativo
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Ignorar archivos temporales comunes
+*.tmp
+*~
+*.swp # Archivos swap de Vim
+
+# Ignorar archivos de log genéricos
+*.log
+logs/
+
+# Ignorar archivos de entorno (si alguna vez usas variables de entorno para claves API, etc.)
+# Es crucial mantener estos archivos fuera del repositorio público.
+# .env
+# .env.local
+# .env.*.local
+# !.env.example # A veces se incluye un ejemplo de .env
+
+# Si en el futuro usas herramientas que generan carpetas de 'build' o 'dist'
+# para archivos compilados, minificados o empaquetados:
+# dist/
+# build/
+# out/
+# .parcel-cache/ # Si usas Parcel
+# .cache/ # Cache de algunas herramientas
+
+# Otros archivos específicos que podrías querer ignorar (ejemplos)
+# .sass-cache/ # Si usas SASS
+# coverage/ # Reportes de cobertura de tests
