@@ -67,60 +67,70 @@ sections.forEach(section => sectionObserver.observe(section));
 
 // Portfolio modal
 const modal = document.getElementById('modal');
-const modalImage = document.getElementById('modal-image');
-const modalTitle = document.getElementById('modal-title');
-const modalDesc = document.getElementById('modal-desc');
-const modalCloseBtn = modal.querySelector('.modal-close');
-let previouslyFocusedElement = null; // To store focus before modal opens
+// SOLUCIÓN: Solo ejecutar la lógica del modal si el elemento 'modal' existe.
+if (modal) {
+    const modalImage = document.getElementById('modal-image');
+    const modalTitle = document.getElementById('modal-title');
+    const modalDesc = document.getElementById('modal-desc');
+    const modalCloseBtn = modal.querySelector('.modal-close'); // Esta línea ahora es segura
+    let previouslyFocusedElement = null; // Para restaurar el foco
 
-document.querySelectorAll('.portfolio-card').forEach(card => {
-    card.addEventListener('click', () => {
-        const img = card.dataset.img;
-        const title = card.dataset.title;
-        const desc = card.dataset.desc;
+    document.querySelectorAll('.portfolio-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const img = card.dataset.img;
+            const title = card.dataset.title;
+            const desc = card.dataset.desc;
 
-        if (modalImage) modalImage.style.backgroundImage = `url('${img}')`;
-        if (modalTitle) modalTitle.textContent = title;
-        if (modalDesc) modalDesc.textContent = desc;
+            if (modalImage) modalImage.style.backgroundImage = `url('${img}')`;
+            if (modalTitle) modalTitle.textContent = title;
+            if (modalDesc) modalDesc.textContent = desc;
 
-        if (modal) {
-            previouslyFocusedElement = document.activeElement; // Save current focus
+            previouslyFocusedElement = document.activeElement; // Guardar foco actual
             modal.classList.add('active');
-            if (modalCloseBtn) modalCloseBtn.focus(); // Focus the close button
-        }
+            if (modalCloseBtn) modalCloseBtn.focus(); // Enfocar el botón de cierre
+        });
     });
-});
 
-function closeModal() {
-    if (modal) {
+    const closeModalPortfolio = () => { // Función para cerrar este modal específico
         modal.classList.remove('active');
         if (previouslyFocusedElement) {
-            previouslyFocusedElement.focus(); // Restore focus
+            previouslyFocusedElement.focus(); // Restaurar foco
             previouslyFocusedElement = null;
         }
+    };
+
+    // Eventos de cierre del modal
+    if (modalCloseBtn) {
+        modalCloseBtn.addEventListener('click', closeModalPortfolio);
     }
-}
 
-// Close modal events
-if (modalCloseBtn) {
-    modalCloseBtn.addEventListener('click', closeModal);
-}
-
-if (modal) {
     modal.addEventListener('click', e => {
-        if (e.target === modal) { // Click on modal background
-            closeModal();
+        if (e.target === modal) { // Clic en el fondo del modal
+            closeModalPortfolio();
+        }
+    });
+
+    document.addEventListener('keydown', e => {
+        // Asegurarse de que 'modal' (el elemento DOM) todavía está en el scope y es el correcto
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModalPortfolio();
         }
     });
 }
+// Fin de la lógica del Portfolio modal
 
-document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && modal && modal.classList.contains('active')) {
-        closeModal();
-    }
+// ... (resto de tu código existente como Contact form handler, Menú Hamburguesa, Estela de Ratón, etc.) ...
+
+// --- COMIENZO: Lógica para Carrusel de Fotos de Viaje y Lightbox ---
+// Esta sección ya está envuelta en su propio DOMContentLoaded y tiene sus propias verificaciones,
+// por lo que debería funcionar una vez que el error anterior no detenga el script.
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('BLOG CAROUSEL: DOMContentLoaded disparado.');
+
+    const carouselContainer = document.querySelector('.travel-carousel-container');
+    // ... (resto de la lógica del carrusel y lightbox del blog) ...
 });
-
-// ... (tu código existente) ...
+// --- FIN: Lógica para Carrusel de Fotos de Viaje y Lightbox ---
 
 // Contact form handler con EmailJS
 const contactForm = document.getElementById('contact-form');
@@ -465,3 +475,206 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 // --- FIN: Barra de Texto Neón en Secciones ---
+// --- COMIENZO: Lógica para Carrusel de Fotos de Viaje y Lightbox ---
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('BLOG CAROUSEL: DOMContentLoaded disparado.');
+
+    // Seleccionar el contenedor principal del carrusel y sus botones
+    const carouselWrapper = document.querySelector('.travel-carousel-wrapper');
+    console.log('BLOG CAROUSEL: carouselWrapper:', carouselWrapper);
+
+    if (!carouselWrapper) {
+        console.log('BLOG CAROUSEL: No se encontró carouselWrapper. Saliendo.');
+        return; // Salir si no hay wrapper en la página (ej. en index.html)
+    }
+
+    // Ahora, los elementos internos se buscan a partir del carouselWrapper
+    const carouselContainer = carouselWrapper.querySelector('.travel-carousel-container');
+    console.log('BLOG CAROUSEL: carouselContainer:', carouselContainer);
+
+    if (!carouselContainer) {
+        console.log('BLOG CAROUSEL: No se encontró carouselContainer dentro del wrapper. Saliendo.');
+        return; // Esencial que exista el contenedor de slides
+    }
+
+    const track = carouselContainer.querySelector('.travel-carousel-slide-track');
+    console.log('BLOG CAROUSEL: track:', track);
+    const slides = track ? Array.from(track.children) : [];
+    console.log('BLOG CAROUSEL: slides:', slides, 'Cantidad:', slides.length);
+
+    // Los botones se seleccionan desde el carouselWrapper
+    const nextButton = carouselWrapper.querySelector('.travel-carousel-next');
+    console.log('BLOG CAROUSEL: nextButton:', nextButton);
+    const prevButton = carouselWrapper.querySelector('.travel-carousel-prev');
+    console.log('BLOG CAROUSEL: prevButton:', prevButton);
+
+    if (!track || !nextButton || !prevButton || slides.length === 0) {
+        console.warn('BLOG CAROUSEL: Elementos críticos del carrusel no encontrados (track, botones o slides vacíos). El carrusel no funcionará.');
+        return;
+    }
+
+    let slideWidth = carouselContainer.getBoundingClientRect().width;
+    console.log('BLOG CAROUSEL: slideWidth inicial:', slideWidth);
+    let currentIndex = 0;
+    let autoPlayInterval;
+    const AUTO_PLAY_DELAY = 5000; // 5 segundos
+
+    const moveToSlide = (targetIndex) => {
+        console.log('BLOG CAROUSEL: moveToSlide llamado con targetIndex:', targetIndex);
+        if (slides.length === 0) {
+            console.log('BLOG CAROUSEL: moveToSlide - no hay slides, retornando.');
+            return;
+        }
+
+        slideWidth = carouselContainer.getBoundingClientRect().width; // Recalcular por si acaso
+        if (slideWidth === 0) {
+            console.error('BLOG CAROUSEL: slideWidth es 0. El carrusel no se moverá.');
+            return;
+        }
+
+        if (targetIndex < 0) {
+            targetIndex = slides.length - 1;
+        } else if (targetIndex >= slides.length) {
+            targetIndex = 0;
+        }
+        console.log('BLOG CAROUSEL: Moviendo a índice final:', targetIndex);
+        track.style.transform = 'translateX(-' + slideWidth * targetIndex + 'px)';
+        console.log('BLOG CAROUSEL: Transform aplicado:', track.style.transform);
+        currentIndex = targetIndex;
+    };
+
+    nextButton.addEventListener('click', () => {
+        console.log('BLOG CAROUSEL: Botext clickeado.');
+        moveToSlide(currentIndex + 1);
+        if (slides.length > 1) resetAutoPlay();
+    });
+
+    prevButton.addEventListener('click', () => {
+        console.log('BLOG CAROUSEL: Botón Prev clickeado.');
+        moveToSlide(currentIndex - 1);
+        if (slides.length > 1) resetAutoPlay();
+    });
+
+    const startAutoPlay = () => {
+        if (slides.length <= 1) return;
+        clearInterval(autoPlayInterval);
+        autoPlayInterval = setInterval(() => {
+            console.log('BLOG CAROUSEL: AutoPlay moviendo al siguiente slide.');
+            moveToSlide(currentIndex + 1);
+        }, AUTO_PLAY_DELAY);
+    };
+
+    const stopAutoPlay = () => {
+        clearInterval(autoPlayInterval);
+    };
+
+    const resetAutoPlay = () => {
+        stopAutoPlay();
+        startAutoPlay();
+    };
+
+    if (slides.length > 1) {
+        startAutoPlay();
+    }
+
+    // Detener autoplay al pasar el ratón sobre el contenedor de imágenes, no sobre todo el wrapper
+    if (carouselContainer) { // Asegurarse que exista
+        carouselContainer.addEventListener('mouseenter', stopAutoPlay);
+        carouselContainer.addEventListener('mouseleave', startAutoPlay);
+    }
+
+
+    // --- Lógica para el Lightbox de Viajes ---
+    // (El resto de la lógica del lightbox debería seguir funcionando bien,
+    // ya que se basa en `slides` que se obtienen del `track` dentro de `carouselContainer`)
+    const lightboxModal = document.getElementById('travel-lightbox-modal');
+    console.log('BLOG LIGHTBOX: lightboxModal:', lightboxModal);
+
+    if (lightboxModal) {
+        const lightboxImage = lightboxModal.querySelector('.travel-lightbox-image');
+        console.log('BLOG LIGHTBOX: lightboxImage:', lightboxImage);
+        const lightboxCloseBtn = lightboxModal.querySelector('.travel-lightbox-close');
+        console.log('BLOG LIGHTBOX: lightboxCloseBtn:', lightboxCloseBtn);
+        let previouslyFocusedElementCarousel = null;
+
+        if (!lightboxImage || !lightboxCloseBtn) {
+            console.warn('BLOG LIGHTBOX: Elementos internos del lightbox (imagen o botón de cierre) no encontrados.');
+        } else {
+            slides.forEach((slide, index) => {
+                const img = slide.querySelector('img');
+                if (img) {
+                    img.addEventListener('click', () => {
+                        console.log('BLOG LIGHTBOX: Imagen clickeada:', img);
+                        const fullSrc = img.dataset.fullSrc || img.src;
+                        const altText = img.alt;
+                        console.log('BLOG LIGHTBOX: fullSrc:', fullSrc, 'altText:', altText);
+
+                        lightboxImage.src = fullSrc;
+                        lightboxImage.alt = altText;
+                        lightboxModal.classList.add('active');
+                        console.log('BLOG LIGHTBOX: Modal activado. Clases del modal:', lightboxModal.className);
+                        document.body.style.overflow = 'hidden';
+                        stopAutoPlay(); // Detener carrusel mientras el lightbox está abierto
+
+                        previouslyFocusedElementCarousel = document.activeElement;
+                        lightboxCloseBtn.focus();
+                    });
+                } else {
+                    console.warn(`BLOG LIGHTBOX: No se encontró img en slide ${index}`);
+                }
+            });
+
+            const closeLightbox = () => {
+                console.log('BLOG LIGHTBOX: closeLightbox llamado.');
+                lightboxModal.classList.remove('active');
+                document.body.style.overflow = '';
+                if (slides.length > 1) startAutoPlay(); // Reanudar carrusel
+
+                if (previouslyFocusedElementCarousel) {
+                    previouslyFocusedElementCarousel.focus();
+                    previouslyFocusedElementCarousel = null;
+                }
+            };
+
+            lightboxCloseBtn.addEventListener('click', closeLightbox);
+
+            lightboxModal.addEventListener('click', (e) => {
+                if (e.target === lightboxModal) {
+                    console.log('BLOG LIGHTBOX: Clic en el fondo del modal.');
+                    closeLightbox();
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && lightboxModal.classList.contains('active')) {
+                    console.log('BLOG LIGHTBOX: Tecla Escape presionada, cerrando lightbox.');
+                    closeLightbox();
+                }
+            });
+        }
+    } else {
+        console.warn('BLOG LIGHTBOX: Elemento del lightbox de viajes (travel-lightbox-modal) no encontrado.');
+    }
+
+    window.addEventListener('resize', () => {
+        console.log('BLOG CAROUSEL: Evento resize disparado.');
+        // Asegurarse que carouselContainer exista antes de acceder a getBoundingClientRect
+        if (carouselContainer) {
+            slideWidth = carouselContainer.getBoundingClientRect().width;
+            console.log('BLOG CAROUSEL: Nuevo slideWidth en resize:', slideWidth);
+            if (slideWidth > 0) {
+                 moveToSlide(currentIndex);
+            } else {
+                console.warn('BLOG CAROUSEL: slideWidth es 0 en resize, no se reposiciona.');
+            }
+        }
+    });
+
+    if (slides.length > 0 && slideWidth > 0) {
+        console.log('BLOG CAROUSEL: Llamada inicial a moveToSlide con currentIndex:', currentIndex);
+        moveToSlide(currentIndex);
+    } else if (slides.length > 0 && slideWidth === 0) {
+        console.warn('BLOG CAROUSEL: slideWidth inicial es 0, la llamada inicial a moveToSlide podría no funcionar.');
+    }
+});
+// --- FIN: Lógica para Carrusel de Fotos de Viaje y Lightbox ---

@@ -89,12 +89,12 @@ body.dark .blog-header {
 }
 
 .blog-header p {
-    font-size: clamp(1rem, 2.5vw, 1.15rem); /* Tamaño de fuente adaptable */
+    font-size: clamp(1.05rem, 2.5vw, 1.2rem); /* Tamaño de fuente adaptable */
     color: var(--text-light);
     max-width: 700px;
     margin-left: auto;
     margin-right: auto;
-    line-height: 1.65;
+    line-height: 1.7;
 
     /* Animación para P */
     opacity: 0; /* Comienza invisible */
@@ -111,13 +111,13 @@ body.dark .blog-header p {
 
 
 .blog-content {
-    max-width: 800px;
+    max-width: 1000px;
     margin: 2rem auto;
     padding: 0 1rem;
 }
 .blog-post {
     background-color: var(--bg-light);
-    padding: 1.5rem;
+    padding: 1.75rem;
     margin-bottom: 2rem;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
@@ -129,23 +129,44 @@ body.dark .blog-post {
 .blog-post h2 {
     color: var(--accent);
     margin-top: 0;
+    font-size: clamp(1.6rem, 4vw, 2.1rem); /* Puedes ajustar si también se ve pequeño */
+    margin-bottom: 1rem; /* Espacio después del título del post */
 }
 .blog-post .post-meta {
-    font-size: 0.9rem;
-    color: #777;
-    margin-bottom: 1rem;
-}
-.blog-post p {
-    text-align: justify;
+    font-size: 0.95rem; /* Ligeramente aumentado */
+    color: #6c757d; /* Un gris un poco más oscuro para mejor contraste en modo claro */
+    margin-bottom: 1.25rem; /* Un poco más de espacio */
 }
 body.dark .blog-post .post-meta {
-    color: #aaa;
+    color: #adb5bd; /* Un gris más claro para modo oscuro */
 }
+
+.blog-post p {
+    text-align: justify;
+    font-size: 1.05rem; /* AUMENTADO: Tamaño base para los párrafos del post */
+    line-height: 1.75;  /* AUMENTADO: Para mejor legibilidad con texto más grande */
+    margin-bottom: 1.15rem; /* Espacio estándar entre párrafos */
+}
+
+/* Si tienes otros elementos de texto específicos dentro del post, como listas o citas,
+   también podrías querer ajustar su font-size y line-height de forma similar. */
+
+.blog-post h3 { /* Por ejemplo, para los subtítulos como "Galería de Recuerdos del Viaje" */
+    font-size: 1.4rem; /* Ajusta según sea necesario */
+    color: var(--heading-color-light);
+    margin-top: 1.75rem;
+    margin-bottom: 0.75rem;
+}
+body.dark .blog-post h3 {
+    color: var(--heading-color-dark);
+}
+
 .back-to-portfolio {
     display: inline-block;
     margin-top: 1rem;
     color: var(--accent);
     text-decoration: underline;
+    font-size: 1rem; /* Aseguramos que este enlace también tenga un tamaño legible */
 }
 .back-to-portfolio:hover {
     color: var(--accent-hover);
@@ -214,3 +235,248 @@ body.dark .blog-post .post-meta {
     display: block;
 }
 /* --- FIN: Estilos para la Galería de Fotos del Viaje --- */
+
+/* --- INICIO: Estilos para el Carrusel de Fotos de Viaje --- */
+.travel-carousel-container {
+    position: relative;
+    width: 100%;
+    max-width: 700px; /* Ajusta según el ancho de tu contenido */
+    margin: 2rem auto; /* Centra el carrusel */
+    overflow: hidden; /* Muy importante para que solo se vea un slide a la vez */
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+body.dark .travel-carousel-container {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.travel-carousel-slide-track {
+    display: flex; /* Coloca los slides en línea */
+    transition: transform 0.5s ease-in-out; /* Animación suave para el deslizamiento */
+    /* El ancho será calculado por JS, pero puedes darle un ancho inicial grande si quieres */
+}
+
+.travel-carousel-slide {
+    min-width: 100%; /* Cada slide ocupa el 100% del contenedor */
+    box-sizing: border-box;
+    position: relative; /* Para el efecto neón */
+    padding: 5px; /* Espacio para el borde neón sin que corte la imagen */
+}
+
+.travel-carousel-slide img {
+    display: block;
+    width: 100%;
+    height: auto; /* Mantiene la proporción de la imagen */
+    max-height: 450px; /* Altura máxima para las imágenes del carrusel */
+    object-fit: cover; /* Cubre el área del slide, puede recortar */
+    border-radius: 6px; /* Ligeramente menos que el contenedor para el efecto de marco */
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    /* Marco de neón y animación - similar al anterior pero adaptado */
+    border: 2px solid transparent; /* Borde inicial transparente */
+    animation: neonPhotoPulse 2.8s infinite alternate ease-in-out;
+}
+
+/* La animación neonPhotoPulse ya la tienes definida, la reutilizamos.
+   Si no la tienes o quieres una específica para el carrusel, defínela aquí.
+   Por ejemplo:
+*/
+@keyframes neonCarouselPulse {
+    0%, 100% {
+        border-color: var(--accent);
+        box-shadow: 0 0 4px var(--accent),
+                    0 0 8px var(--accent),
+                    0 0 12px var(--accent-hover);
+    }
+    50% {
+        border-color: var(--accent-hover);
+        box-shadow: 0 0 6px var(--accent-hover),
+                    0 0 12px var(--accent-hover),
+                    0 0 20px var(--accent);
+    }
+}
+.travel-carousel-slide img {
+    animation: neonCarouselPulse 2.8s infinite alternate ease-in-out;
+}
+
+
+.travel-carousel-slide img:hover {
+    transform: scale(1.03); /* Ligero zoom al pasar el ratón */
+}
+
+/* Botones de Navegación del Carrusel */
+
+/* Nuevo contenedor para el carrusel y los botones */
+.travel-carousel-wrapper {
+    display: flex;
+    align-items: center; /* Centra verticalmente los botones con el carrusel */
+    justify-content: center; /* Centra el conjunto si es más estrecho que el contenedor padre */
+    gap: 10px; /* Espacio entre los botones y el carrusel, ajusta según necesites */
+    margin: 2rem auto; /* Centra el wrapper */
+}
+
+.travel-carousel-container {
+    position: relative;
+    width: 100%;
+    /* max-width: 700px; /* Ancho original */
+    max-width: 800px; /* Aumentado para que ocupe más del nuevo ancho del artículo */
+    /* margin: 2rem auto; /* El margen ahora lo maneja el .travel-carousel-wrapper */
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    /* flex-grow: 1; /* Descomenta si quieres que el carrusel intente ocupar espacio */
+}
+
+body.dark .travel-carousel-container {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.travel-carousel-slide-track {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.travel-carousel-slide {
+    min-width: 100%;
+    box-sizing: border-box;
+    position: relative;
+    padding: 5px;
+}
+
+.travel-carousel-slide img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 450px;
+    object-fit: cover;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 2px solid transparent;
+    animation: neonCarouselPulse 2.8s infinite alternate ease-in-out; /* Reutilizas tu animación neonCarouselPulse */
+}
+
+/* La animación neonCarouselPulse ya la tienes definida, la reutilizamos. */
+@keyframes neonCarouselPulse {
+    0%, 100% {
+        border-color: var(--accent);
+        box-shadow: 0 0 4px var(--accent),
+                    0 0 8px var(--accent),
+                    0 0 12px var(--accent-hover);
+    }
+    50% {
+        border-color: var(--accent-hover);
+        box-shadow: 0 0 6px var(--accent-hover),
+                    0 0 12px var(--accent-hover),
+                    0 0 20px var(--accent);
+    }
+}
+
+.travel-carousel-slide img:hover {
+    transform: scale(1.03);
+}
+
+/* Botones de Navegación del Carrusel - Modificados */
+.travel-carousel-prev,
+.travel-carousel-next {
+    cursor: pointer;
+    /* position: absolute; YA NO ES ABSOLUTO */
+    /* top: 50%; YA NO SE NECESITA ASÍ */
+    /* transform: translateY(-50%); YA NO SE NECESITA ASÍ */
+    width: auto;
+    padding: 10px 15px; /* Ajusta el padding para el tamaño deseado */
+    color: var(--text-light); /* Color de texto para modo claro */
+    background-color: var(--gray-light); /* Fondo sutil para modo claro */
+    border: 2px solid var(--accent); /* Borde con tu color de acento */
+    border-radius: 50%; /* Para hacerlos redondos */
+    user-select: none;
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    z-index: 5; /* Menor z-index ya que no se superponen directamente a la imagen */
+    font-weight: bold;
+    font-size: 18px; /* Ajusta el tamaño de la flecha */
+    line-height: 1; /* Ayuda a centrar la flecha verticalmente */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    flex-shrink: 0; /* Evita que los botones se encojan */
+}
+
+body.dark .travel-carousel-prev,
+body.dark .travel-carousel-next {
+    color: var(--text-dark);
+    background-color: var(--gray-dark);
+    border-color: var(--accent); /* Mantenemos el borde de acento o lo ajustamos si es necesario */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.travel-carousel-prev:hover,
+.travel-carousel-next:hover {
+    background-color: var(--accent);
+    color: #111; /* Texto oscuro para contraste sobre el fondo de acento */
+    border-color: var(--accent-hover);
+    box-shadow: 0 0 10px var(--accent-hover);
+}
+/* --- FIN: Estilos para el Carrusel de Fotos de Viaje --- */
+
+
+/* --- INICIO: Estilos para el Modal Lightbox de Viajes --- */
+.travel-lightbox-modal {
+    display: none; /* Oculto por defecto */
+    position: fixed;
+    z-index: 2000; /* Encima de todo */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* Permite scroll si la imagen es muy grande (aunque la idea es ajustarla) */
+    background-color: rgba(0,0,0,0.9); /* Fondo oscuro semitransparente */
+    justify-content: center;
+    align-items: center;
+    opacity: 0; /* Para animación de fade-in */
+    transition: opacity 0.4s ease-in-out;
+}
+
+.travel-lightbox-modal.active {
+    display: flex; /* Se muestra con flex para centrar */
+    opacity: 1;
+}
+
+.travel-lightbox-image {
+    margin: auto;
+    display: block;
+    max-width: 90%;
+    max-height: 85vh; /* Altura máxima para dejar espacio al botón de cierre */
+    border-radius: 5px;
+    box-shadow: 0 0 25px rgba(57, 255, 20, 0.5); /* Sombra neón */
+    animation: lightboxZoomIn 0.5s ease-out; /* Animación al abrir */
+}
+
+@keyframes lightboxZoomIn {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.travel-lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+    cursor: pointer;
+    z-index: 2001; /* Encima de la imagen */
+}
+
+.travel-lightbox-close:hover,
+.travel-lightbox-close:focus {
+    color: var(--accent);
+    text-decoration: none;
+}
+/* --- FIN: Estilos para el Modal Lightbox de Viajes --- */
