@@ -308,57 +308,73 @@ body.dark .travel-carousel-container {
 
 /* Botones de Navegación del Carrusel */
 
-/* Nuevo contenedor para el carrusel y los botones */
+/* --- INICIO: Estilos para el Carrusel de Fotos de Viaje (Versión Limpia) --- */
+
+/* Contenedor principal que envuelve el carrusel y los botones externos */
 .travel-carousel-wrapper {
     display: flex;
-    align-items: center; /* Centra verticalmente los botones con el carrusel */
-    justify-content: center; /* Centra el conjunto si es más estrecho que el contenedor padre */
-    gap: 10px; /* Espacio entre los botones y el carrusel, ajusta según necesites */
-    margin: 2rem auto; /* Centra el wrapper */
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 2rem auto;
 }
 
+/* Contenedor de las imágenes que se desborda */
 .travel-carousel-container {
     position: relative;
     width: 100%;
-    /* max-width: 700px; /* Ancho original */
-    max-width: 800px; /* Aumentado para que ocupe más del nuevo ancho del artículo */
-    /* margin: 2rem auto; /* El margen ahora lo maneja el .travel-carousel-wrapper */
+    max-width: 800px;
     overflow: hidden;
     border-radius: 8px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    /* flex-grow: 1; /* Descomenta si quieres que el carrusel intente ocupar espacio */
 }
 
 body.dark .travel-carousel-container {
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
+/* Pista que contiene todos los slides y se mueve */
 .travel-carousel-slide-track {
     display: flex;
     transition: transform 0.5s ease-in-out;
 }
 
+/* Cada slide individual (imagen o video) */
 .travel-carousel-slide {
     min-width: 100%;
     box-sizing: border-box;
     position: relative;
     padding: 5px;
+    background-color: #1c1c1c; /* Fondo para 'object-fit: contain' */
+    height: 450px; /* Altura fija para todos los slides */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
+/* Estilos para las imágenes dentro de un slide */
 .travel-carousel-slide img {
     display: block;
     width: 100%;
-    height: auto;
-    max-height: 450px;
-    object-fit: cover;
+    height: 100%;
+    object-fit: contain; /* Asegura que toda la imagen sea visible sin recortar */
     border-radius: 6px;
     cursor: pointer;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     border: 2px solid transparent;
-    animation: neonCarouselPulse 2.8s infinite alternate ease-in-out; /* Reutilizas tu animación neonCarouselPulse */
+    animation: neonCarouselPulse 2.8s infinite alternate ease-in-out;
 }
 
-/* La animación neonCarouselPulse ya la tienes definida, la reutilizamos. */
+/* Estilos para los videos dentro de un slide */
+.travel-carousel-slide video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* También para videos */
+    border-radius: 6px;
+}
+
+/* Animación de pulso neón para las imágenes */
 @keyframes neonCarouselPulse {
     0%, 100% {
         border-color: var(--accent);
@@ -378,41 +394,38 @@ body.dark .travel-carousel-container {
     transform: scale(1.03);
 }
 
-/* Botones de Navegación del Carrusel - Modificados */
+/* Botones de Navegación del Carrusel (externos) */
 .travel-carousel-prev,
 .travel-carousel-next {
     cursor: pointer;
-    /* position: absolute; YA NO ES ABSOLUTO */
-    /* top: 50%; YA NO SE NECESITA ASÍ */
-    /* transform: translateY(-50%); YA NO SE NECESITA ASÍ */
     width: auto;
-    padding: 10px 15px; /* Ajusta el padding para el tamaño deseado */
-    color: var(--text-light); /* Color de texto para modo claro */
-    background-color: var(--gray-light); /* Fondo sutil para modo claro */
-    border: 2px solid var(--accent); /* Borde con tu color de acento */
-    border-radius: 50%; /* Para hacerlos redondos */
+    padding: 10px 15px;
+    color: var(--text-light);
+    background-color: var(--gray-light);
+    border: 2px solid var(--accent);
+    border-radius: 50%;
     user-select: none;
     transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-    z-index: 5; /* Menor z-index ya que no se superponen directamente a la imagen */
+    z-index: 5;
     font-weight: bold;
-    font-size: 18px; /* Ajusta el tamaño de la flecha */
-    line-height: 1; /* Ayuda a centrar la flecha verticalmente */
+    font-size: 18px;
+    line-height: 1;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    flex-shrink: 0; /* Evita que los botones se encojan */
+    flex-shrink: 0;
 }
 
 body.dark .travel-carousel-prev,
 body.dark .travel-carousel-next {
     color: var(--text-dark);
     background-color: var(--gray-dark);
-    border-color: var(--accent); /* Mantenemos el borde de acento o lo ajustamos si es necesario */
+    border-color: var(--accent);
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .travel-carousel-prev:hover,
 .travel-carousel-next:hover {
     background-color: var(--accent);
-    color: #111; /* Texto oscuro para contraste sobre el fondo de acento */
+    color: #111;
     border-color: var(--accent-hover);
     box-shadow: 0 0 10px var(--accent-hover);
 }
@@ -421,23 +434,23 @@ body.dark .travel-carousel-next {
 
 /* --- INICIO: Estilos para el Modal Lightbox de Viajes --- */
 .travel-lightbox-modal {
-    display: none; /* Oculto por defecto */
+    display: none;
     position: fixed;
-    z-index: 2000; /* Encima de todo */
+    z-index: 2000;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto; /* Permite scroll si la imagen es muy grande (aunque la idea es ajustarla) */
-    background-color: rgba(0,0,0,0.9); /* Fondo oscuro semitransparente */
+    overflow: auto;
+    background-color: rgba(0,0,0,0.9);
     justify-content: center;
     align-items: center;
-    opacity: 0; /* Para animación de fade-in */
+    opacity: 0;
     transition: opacity 0.4s ease-in-out;
 }
 
 .travel-lightbox-modal.active {
-    display: flex; /* Se muestra con flex para centrar */
+    display: flex;
     opacity: 1;
 }
 
@@ -445,10 +458,10 @@ body.dark .travel-carousel-next {
     margin: auto;
     display: block;
     max-width: 90%;
-    max-height: 85vh; /* Altura máxima para dejar espacio al botón de cierre */
+    max-height: 85vh;
     border-radius: 5px;
-    box-shadow: 0 0 25px rgba(57, 255, 20, 0.5); /* Sombra neón */
-    animation: lightboxZoomIn 0.5s ease-out; /* Animación al abrir */
+    box-shadow: 0 0 25px rgba(57, 255, 20, 0.5);
+    animation: lightboxZoomIn 0.5s ease-out;
 }
 
 @keyframes lightboxZoomIn {
@@ -471,7 +484,7 @@ body.dark .travel-carousel-next {
     font-weight: bold;
     transition: 0.3s;
     cursor: pointer;
-    z-index: 2001; /* Encima de la imagen */
+    z-index: 2001;
 }
 
 .travel-lightbox-close:hover,
