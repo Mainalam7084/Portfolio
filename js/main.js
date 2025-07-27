@@ -121,14 +121,126 @@ if (modal) {
 
 // ... (resto de tu código existente como Contact form handler, Menú Hamburguesa, Estela de Ratón, etc.) ...
 
-// --- COMIENZO: Lógica para Carrusel de Fotos de Viaje y Lightbox ---
-// Esta sección ya está envuelta en su propio DOMContentLoaded y tiene sus propias verificaciones,
-// por lo que debería funcionar una vez que el error anterior no detenga el script.
+// --- COMIENZO: Lógica para Carrusel de Fotos de Viaje y Lightbox (Refactorizado para múltiples carruseles) ---
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('BLOG CAROUSEL: DOMContentLoaded disparado.');
+    // Seleccionamos TODOS los carruseles de la página
+    const carousels = document.querySelectorAll('.travel-carousel-wrapper');
 
-    const carouselContainer = document.querySelector('.travel-carousel-container');
-    // ... (resto de la lógica del carrusel y lightbox del blog) ...
+    if (carousels.length > 0) {
+        console.log(`BLOG CAROUSEL: Encontrados ${carousels.length} carruseles. Inicializando...`);
+    } else {
+        return; // No hay carruseles en esta página, salir.
+    }
+
+    // La lógica del Lightbox es única para la página, la preparamos aquí.
+    const lightboxModal = document.getElementById('travel-lightbox-modal');
+    const lightboxImage = lightboxModal ? lightboxModal.querySelector('.travel-lightbox-image') : null;
+    const lightboxCloseBtn = lightboxModal ? lightboxModal.querySelector('.travel-lightbox-close') : null;
+    let activeCarouselStopAutoPlay = null; // Para saber qué carrusel pausar/reanudar
+
+    if (lightboxModal && lightboxImage && lightboxCloseBtn) {
+        const closeLightbox = () => {
+            lightboxModal.classList.remove('active');
+            document.body.style.overflow = '';
+            // Reanuda el autoplay del carrusel que estaba activo
+            if (activeCarouselStopAutoPlay) {
+                activeCarouselStopAutoPlay.start();
+                activeCarouselStopAutoPlay = null;
+            }
+        };
+
+        lightboxCloseBtn.addEventListener('click', closeLightbox);
+        lightboxModal.addEventListener('click', (e) => {
+            if (e.target === lightboxModal) closeLightbox();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && lightboxModal.classList.contains('active')) closeLightbox();
+        });
+    }
+
+    // Iteramos sobre cada carrusel para que funcionen de forma independiente
+    carousels.forEach((carouselWrapper, carouselIndex) => {
+        const carouselContainer = carouselWrapper.querySelector('.travel-carousel-container');
+        const track = carouselContainer ? carouselContainer.querySelector('.travel-carousel-slide-track') : null;
+        const slides = track ? Array.from(track.children) : [];
+        const nextButton = carouselWrapper.querySelector('.travel-carousel-next');
+        const prevButton = carouselWrapper.querySelector('.travel-carousel-prev');
+
+        if (!carouselContainer || !track || !nextButton || !prevButton || slides.length === 0) {
+            console.warn(`Carrusel #${carouselIndex}: Faltan elementos críticos. El carrusel no funcionará.`);
+            return; // Salta al siguiente carrusel si este está incompleto
+        }
+
+        let slideWidth = carouselContainer.getBoundingClientRect().width;
+        let currentIndex = 0;
+        let autoPlayInterval;
+        const AUTO_PLAY_DELAY = 5000 + (carouselIndex * 500); // Pequeño desfase en autoplay para que no vayan sincronizados
+
+        const moveToSlide = (targetIndex) => {
+            if (slides.length === 0) return;
+            slideWidth = carouselContainer.getBoundingClientRect().width;
+            if (slideWidth === 0) return;
+
+            if (targetIndex < 0) {
+                targetIndex = slides.length - 1;
+            } else if (targetIndex >= slides.length) {
+                targetIndex = 0;
+            }
+            track.style.transform = 'translateX(-' + slideWidth * targetIndex + 'px)';
+            currentIndex = targetIndex;
+        };
+
+        const startAutoPlay = () => {
+            if (slides.length <= 1) return;
+            clearInterval(autoPlayInterval);
+            autoPlayInterval = setInterval(() => moveToSlide(currentIndex + 1), AUTO_PLAY_DELAY);
+        };
+
+        const stopAutoPlay = () => clearInterval(autoPlayInterval);
+        const resetAutoPlay = () => {
+            stopAutoPlay();
+            startAutoPlay();
+        };
+
+        nextButton.addEventListener('click', () => {
+            moveToSlide(currentIndex + 1);
+            resetAutoPlay();
+        });
+
+        prevButton.addEventListener('click', () => {
+            moveToSlide(currentIndex - 1);
+            resetAutoPlay();
+        });
+
+        carouselContainer.addEventListener('mouseenter', stopAutoPlay);
+        carouselContainer.addEventListener('mouseleave', startAutoPlay);
+
+        // Lógica para abrir el Lightbox desde este carrusel específico
+        slides.forEach(slide => {
+            const img = slide.querySelector('img');
+            if (img && lightboxModal) {
+                img.addEventListener('click', () => {
+                    const fullSrc = img.dataset.fullSrc || img.src;
+                    lightboxImage.src = fullSrc;
+                    lightboxImage.alt = img.alt;
+                    lightboxModal.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                    stopAutoPlay();
+                    // Guardamos una referencia a las funciones de autoplay de este carrusel
+                    activeCarouselStopAutoPlay = { start: startAutoPlay, stop: stopAutoPlay };
+                });
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            moveToSlide(currentIndex);
+        });
+
+        // Iniciar
+        moveToSlide(currentIndex);
+        startAutoPlay();
+        console.log(`Carrusel #${carouselIndex}: Inicializado correctamente.`);
+    });
 });
 // --- FIN: Lógica para Carrusel de Fotos de Viaje y Lightbox ---
 
